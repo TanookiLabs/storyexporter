@@ -1,5 +1,5 @@
 CREATE TABLE `comment` (
-	`id` integer,
+	`id` integer PRIMARY KEY NOT NULL,
 	`story_id` integer,
 	`text` text,
 	`person_id` integer,
@@ -8,7 +8,7 @@ CREATE TABLE `comment` (
 );
 --> statement-breakpoint
 CREATE TABLE `epic` (
-	`id` integer,
+	`id` integer PRIMARY KEY NOT NULL,
 	`project_id` integer,
 	`name` text,
 	`description` text,
@@ -17,7 +17,7 @@ CREATE TABLE `epic` (
 );
 --> statement-breakpoint
 CREATE TABLE `file_attachment` (
-	`id` integer,
+	`id` integer PRIMARY KEY NOT NULL,
 	`story_id` integer NOT NULL,
 	`filename` text,
 	`content_type` text,
@@ -28,7 +28,7 @@ CREATE TABLE `file_attachment` (
 );
 --> statement-breakpoint
 CREATE TABLE `person` (
-	`id` integer,
+	`id` integer PRIMARY KEY NOT NULL,
 	`name` text,
 	`email` text,
 	`initials` text,
@@ -37,8 +37,8 @@ CREATE TABLE `person` (
 );
 --> statement-breakpoint
 CREATE TABLE `project` (
-	`id` integer,
-	`name` text,
+	`id` integer PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
 	`description` text,
 	`status` text,
 	`iteration_length` integer,
@@ -47,7 +47,7 @@ CREATE TABLE `project` (
 );
 --> statement-breakpoint
 CREATE TABLE `story` (
-	`id` integer,
+	`id` integer PRIMARY KEY NOT NULL,
 	`project_id` integer,
 	`name` text,
 	`description` text,

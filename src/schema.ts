@@ -1,8 +1,9 @@
+import {InferInsertModel} from 'drizzle-orm'
 import {integer, real, sqliteTable, text} from 'drizzle-orm/sqlite-core'
 
 export const projectTable = sqliteTable('project', {
-  id: integer('id'),
-  name: text('name'),
+  id: integer('id').primaryKey().notNull(),
+  name: text('name').notNull(),
   description: text('description'),
   status: text('status'),
   iterationLength: integer('iteration_length'),
@@ -11,7 +12,7 @@ export const projectTable = sqliteTable('project', {
 })
 
 export const storyTable = sqliteTable('story', {
-  id: integer('id'),
+  id: integer('id').primaryKey().notNull(),
   projectId: integer('project_id'),
   name: text('name'),
   description: text('description'),
@@ -24,7 +25,7 @@ export const storyTable = sqliteTable('story', {
 })
 
 export const personTable = sqliteTable('person', {
-  id: integer('id'),
+  id: integer('id').primaryKey().notNull(),
   name: text('name'),
   email: text('email'),
   initials: text('initials'),
@@ -33,7 +34,7 @@ export const personTable = sqliteTable('person', {
 })
 
 export const commentTable = sqliteTable('comment', {
-  id: integer('id'),
+  id: integer('id').primaryKey().notNull(),
   storyId: integer('story_id'),
   text: text('text'),
   personId: integer('person_id'),
@@ -42,7 +43,7 @@ export const commentTable = sqliteTable('comment', {
 })
 
 export const epicTable = sqliteTable('epic', {
-  id: integer('id'),
+  id: integer('id').primaryKey().notNull(),
   projectId: integer('project_id'),
   name: text('name'),
   description: text('description'),
@@ -51,7 +52,7 @@ export const epicTable = sqliteTable('epic', {
 })
 
 export const fileAttachmentTable = sqliteTable('file_attachment', {
-  id: integer('id'),
+  id: integer('id').primaryKey().notNull(),
   storyId: integer('story_id').notNull(),
   filename: text('filename'),
   contentType: text('content_type'),
@@ -60,3 +61,11 @@ export const fileAttachmentTable = sqliteTable('file_attachment', {
   uploaderId: integer('uploader_id'),
   createdAt: text('created_at'),
 })
+
+
+export type Project = InferInsertModel<typeof projectTable>
+export type Story = InferInsertModel<typeof storyTable>
+export type Person = InferInsertModel<typeof personTable>
+export type Comment = InferInsertModel<typeof commentTable>
+export type FileAttachment = InferInsertModel<typeof fileAttachmentTable>
+export type Epic = InferInsertModel<typeof epicTable>
