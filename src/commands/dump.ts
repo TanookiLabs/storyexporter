@@ -49,5 +49,6 @@ export default class Dump extends Command {
     })
 
     console.log(await resp.json())
+    console.log('x')
   }
 }
