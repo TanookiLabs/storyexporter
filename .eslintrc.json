@@ -5,6 +5,8 @@
     "@typescript-eslint/prefer-destructuring": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "prefer-destructuring": "off",
-    "perfectionist/sort-imports": "off"
+    "perfectionist/sort-imports": "off",
+    "perfectionist/sort-objects": "off",
+    "camelcase": "off",
   }
 }

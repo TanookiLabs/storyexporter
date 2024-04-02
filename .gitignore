@@ -11,3 +11,5 @@
 node_modules
 oclif.lock
 oclif.manifest.json
+.env
+testing.db

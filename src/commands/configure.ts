@@ -4,7 +4,7 @@ import {promises as fs} from 'node:fs'
 import path from 'node:path'
 
 export default class Configure extends Command {
-  static description = 'describe the command here'
+  static description = 'saves configuration to ~/.config/<%= config.bin %>/config.json'
 
   static examples = ['<%= config.bin %> <%= command.id %>']
 
