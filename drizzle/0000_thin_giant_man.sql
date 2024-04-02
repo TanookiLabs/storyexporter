@@ -32,8 +32,7 @@ CREATE TABLE `person` (
 	`name` text,
 	`email` text,
 	`initials` text,
-	`created_at` text,
-	`updated_at` text
+	`username` text
 );
 --> statement-breakpoint
 CREATE TABLE `project` (

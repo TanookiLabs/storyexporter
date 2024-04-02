@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "fab2a8e3-82a9-46db-98e7-2036e3751523",
+  "id": "81cc7912-0a8d-4433-804f-0813becb05d3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comment": {
@@ -202,15 +202,8 @@
           "notNull": false,
           "autoincrement": false
         },
-        "created_at": {
-          "name": "created_at",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_at": {
-          "name": "updated_at",
+        "username": {
+          "name": "username",
           "type": "text",
           "primaryKey": false,
           "notNull": false,

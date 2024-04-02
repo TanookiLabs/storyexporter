@@ -53,10 +53,6 @@ export default class Dump extends Command {
     migrate(db, {migrationsFolder: 'drizzle'}) // can this be done without migration files? need to make sure this works when run from a different directory
 
     const api = trackerApi(config)
-    // steps:
-    // - projects
-    // - epics
-    // - stories
 
     await api.page<Array<tracker.Epic>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`,
@@ -75,23 +71,52 @@ export default class Dump extends Command {
     await api.paginate<Array<tracker.Story>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories`,
       async (page) => {
-        db.insert(tracker.storyTable).values(page)
-        console.log(`adding ${page.length} stories`)
+        let result = await db.insert(tracker.storyTable).values(page)
+        console.log(`added ${result.changes} stories`)
 
-        for (const story of page) {
-          api.page<Array<tracker.Comment>>(
-            `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments`,
-            async (page) => {
-              db.insert(tracker.commentTable).values(page)
-            },
-          )
-        }
+        // for (const story of page) {
+        //   api.page<Array<tracker.Comment>>(
+        //     `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments`,
+        //     async (page) => {
+        //       await db.insert(tracker.commentTable).values(page)
+        //     },
+        //   )
+        // }
       },
     )
+
+    await api.page<
+      Array<{
+        kind: string
+        project_id: number
+        id: number
+        last_viewed_at: Date
+        created_at: Date
+        updated_at: Date
+        role: string
+        project_color: string
+        favorite: boolean
+        wants_comment_notification_emails: boolean
+        will_receive_mention_notifications_or_emails: boolean
+        person: {
+          kind: string
+          id: number
+          name: string
+          email: string
+          initials: string
+          username: string
+        }
+      }>
+    >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
+      console.log(JSON.stringify(page))
+      let people = page.map((membership) => membership.person)
+      await db.insert(tracker.personTable).values(people)
+    })
 
     // returns counts of tables
     console.log('epics: ' + (await db.select({count: count()}).from(tracker.epicTable))[0].count)
     console.log('stories: ' + (await db.select({count: count()}).from(tracker.storyTable))[0].count)
     console.log('comments: ' + (await db.select({count: count()}).from(tracker.commentTable))[0].count)
+    console.log('people: ' + (await db.select({count: count()}).from(tracker.personTable))[0].count)
   }
 }

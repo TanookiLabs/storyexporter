@@ -29,8 +29,7 @@ export const personTable = sqliteTable('person', {
   name: text('name'),
   email: text('email'),
   initials: text('initials'),
-  createdAt: text('created_at'),
-  updatedAt: text('updated_at'),
+  username: text('username'),
 })
 
 export const commentTable = sqliteTable('comment', {
