@@ -1,13 +1,12 @@
 import {Command, Flags} from '@oclif/core'
 import {promises as fs} from 'node:fs'
-import path from "node:path";
+import path from 'node:path'
+import {configPath, configSchema} from '../configuration.js'
 
 export default class Dump extends Command {
   static description = 'describe the command here'
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
+  static examples = ['<%= config.bin %> <%= command.id %>']
 
   static flags = {
     output: Flags.string({char: 'o', description: 'path to sqlite database file', required: true}),
@@ -19,13 +18,10 @@ export default class Dump extends Command {
     const projectId = flags.project
     const db = flags.db
 
-    console.log('ok....')
-    const userConfig = await fs.readFile(
-      path.join(this.config.configDir, "config.json")
-    );
+    const configFile = await fs.readFile(configPath(this))
+    const config = configSchema.parse(JSON.parse(configFile.toString()))
 
-    this.log("User config:");
-    console.dir(userConfig);
-
+    this.log('User config:')
+    console.dir(config)
   }
 }
