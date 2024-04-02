@@ -4,12 +4,11 @@ import {drizzle} from 'drizzle-orm/better-sqlite3'
 import {integer, sqliteTable, text} from 'drizzle-orm/sqlite-core'
 import {promises as fs} from 'node:fs'
 import {configPath, configSchema} from '../configuration.js'
-import { sql } from 'drizzle-orm'
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
-import { users } from '../schema.js'
+import {sql} from 'drizzle-orm'
+import {migrate} from 'drizzle-orm/better-sqlite3/migrator'
 
 export default class Dump extends Command {
-  static description = 'describe the command here'
+  static description = 'exports pivotal tracker data to sqlite database'
 
   static examples = ['<%= config.bin %> <%= command.id %>']
 
@@ -23,25 +22,32 @@ export default class Dump extends Command {
     const projectId = flags.project
     const output = flags.output
 
-    const configFile = await fs.readFile(configPath(this))
-    const config = configSchema.parse(JSON.parse(configFile.toString()))
+    let config
+    try {
+      const configFile = await fs.readFile(configPath(this))
+      config = configSchema.parse(JSON.parse(configFile.toString()))
+    } catch (er) {
+      console.error('error reading config file', er)
+      console.log('run configure')
+      return
+    }
 
     const sqlite = new Database(output)
     const db = drizzle(sqlite)
 
-    migrate(db, {migrationsFolder: 'drizzle'}) // can this be done without migration files?
-    console.log('done migration')
+    migrate(db, {migrationsFolder: 'drizzle'}) // can this be done without migration files? need to make sure this works when run from a different directory
 
-    await db.insert(users).values({
-      id: '1',
-      textModifiers: 'hello',
-      // intModifiers: 1,
+    // steps:
+    // - projects
+    // - epics
+    // - stories
+    const resp = await fetch(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`, {
+      headers: {
+        'X-TrackerToken': config.apiKey,
+        accept: 'application/json',
+      },
     })
 
-    const result = await db.select().from(users)
-    console.log('result', result)
-
-    this.log('User config:')
-    console.dir(config)
+    console.log(await resp.json())
   }
 }
