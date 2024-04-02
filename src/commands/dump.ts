@@ -53,7 +53,6 @@ export default class Dump extends Command {
     migrate(db, {migrationsFolder: 'drizzle'}) // can this be done without migration files? need to make sure this works when run from a different directory
 
     const api = trackerApi(config)
-
     // steps:
     // - projects
     // - epics
@@ -77,8 +76,8 @@ export default class Dump extends Command {
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories`,
       async (page) => {
         db.insert(tracker.storyTable).values(page)
+        console.log(`adding ${page.length} stories`)
 
-        console.log('xyx', page)
         for (const story of page) {
           api.page<Array<tracker.Comment>>(
             `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments`,

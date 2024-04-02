@@ -1,15 +1,29 @@
+import {pRateLimit} from 'p-ratelimit'
+
+// chatgpt tells me the rate limit is '200 per minute per user'
+// 3 per second comes out at 180 per minute
+const limit = pRateLimit({
+  interval: 1000,
+  rate: 3,
+  concurrency: 5,
+})
+
 export function trackerApi(config: {apiKey: string}) {
   async function request<TData>(url: string): Promise<TData> {
-    const response = await fetch(url, {
-      headers: {
-        'X-TrackerToken': config.apiKey,
-        accept: 'application/json',
-      },
-    })
+    const response = await limit(() =>
+      fetch(url, {
+        headers: {
+          'X-TrackerToken': config.apiKey,
+          accept: 'application/json',
+        },
+      }),
+    )
 
     if (!response.ok) {
       try {
         console.error(await response.text())
+        console.error("headers:")
+        console.error(Object.fromEntries(response.headers.entries()))
       } catch (er) {}
       throw new Error(`request failed with status ${response.status}`)
     }
