@@ -1,0 +1,80 @@
+{
+  "name": "storyexporter",
+  "version": "0.4.27",
+  "description": "exports pivotal tracker data to an sqlite database",
+  "keywords": [
+    "oclif"
+  ],
+  "homepage": "https://github.com/tanookilabs/storyexporter",
+  "bugs": "https://github.com/tanookilabs/storyexporter/issues",
+  "repository": "tanookilabs/storyexporter",
+  "license": "MIT",
+  "author": "Peter Schilling",
+  "type": "module",
+  "exports": "./lib/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "storyexporter": "./bin/run.js"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "prepare": "npm run build",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "npm run lint",
+    "version": "oclif readme && git add README.md"
+  },
+  "oclif": {
+    "bin": "storyexporter",
+    "commands": "./dist/commands",
+    "dirname": "storyexporter",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      },
+      "export": {
+        "description": "Export pivotal tracker data to an sqlite database"
+      }
+    }
+  },
+  "dependencies": {
+    "@oclif/core": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^4",
+    "fs-extra": "^11.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^3",
+    "@types/chai": "^4",
+    "@types/fs-extra": "^11.0.4",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9.1.0",
+    "mocha": "^10",
+    "oclif": "^4.7.3",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

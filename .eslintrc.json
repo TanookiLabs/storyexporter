@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/eslintrc",
+  "extends": ["oclif", "oclif-typescript", "prettier"],
+  "rules": {
+    "@typescript-eslint/prefer-destructuring": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "prefer-destructuring": "off",
+    "perfectionist/sort-imports": "off"
+  }
+}
