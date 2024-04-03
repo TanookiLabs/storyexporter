@@ -28,15 +28,12 @@ export default class Dump extends Command {
       config = configSchema.parse(JSON.parse(configFile.toString()))
     } catch (er) {
       console.error('error reading config file', er)
-      console.log('run configure')
+      console.error('to fix this: run `storyexporter configure --apiKey <your api key>`')
       return
     }
 
-    let currentDirectory = process.cwd()
-
     let dbPath = flags.database
 
-    // if the db exists already, don't open it, use fs promise api
     if (
       await fs
         .access(dbPath)
@@ -109,7 +106,7 @@ export default class Dump extends Command {
       }>
     >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
       console.log(JSON.stringify(page))
-      let people = page.map((membership) => membership.person)
+      let people: Array<tracker.Person> = page.map((membership) => membership.person)
       await db.insert(tracker.personTable).values(people)
     })
 
