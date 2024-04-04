@@ -82,7 +82,7 @@ export const fileAttachmentTable = sqliteTable('file_attachment', {
 export const fileAttachmentFileTable = sqliteTable(
   'file_attachment_file',
   {
-    file_attachment_id: integer('file_attachment_id').notNull(),
+    file_attachment_id: integer('file_attachment_id').notNull().references(() => fileAttachmentTable.id),
     blob: blob('blob', {mode: "buffer"}).notNull(),
   },
   (table) => {
