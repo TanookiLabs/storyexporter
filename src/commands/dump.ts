@@ -21,7 +21,6 @@ export default class Dump extends Command {
   public async run(): Promise<void> {
     const {flags} = await this.parse(Dump)
     const projectId = flags.project
-    const debuggingCommentLimit = 50
 
     let config
     try {
@@ -48,16 +47,11 @@ export default class Dump extends Command {
     const sqlite = new Database(dbPath, {})
     const db = drizzle(sqlite)
 
-    migrate(db, {migrationsFolder: 'drizzle'}) // can this be done without migration files? need to make sure this works when run from a different directory
+    // TODO: do this without migration files if possible, not sure if drizzle supports that
+    // need to make sure this works when run from a different directory
+    migrate(db, {migrationsFolder: 'drizzle'})
 
     const api = trackerApi(config)
-
-    await api.page<Array<tracker.Epic>>(
-      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`,
-      (page) => {
-        return db.insert(tracker.epicTable).values(page)
-      },
-    )
 
     await api.page<Array<tracker.Project>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}`,
@@ -66,13 +60,95 @@ export default class Dump extends Command {
       },
     )
 
-    await api.paginate<Array<tracker.Story>>(
+    await api.page<Array<tracker.Label>>(
+      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/labels`,
+      (page) => {
+        return db.insert(tracker.labelTable).values(page)
+      },
+    )
+
+    await api.page<Array<tracker.Epic>>(
+      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`,
+      (page) => {
+        return db.insert(tracker.epicTable).values(page)
+      },
+    )
+
+    await api.page<
+      Array<{
+        kind: string
+        project_id: number
+        id: number
+        last_viewed_at: Date
+        created_at: Date
+        updated_at: Date
+        role: string
+        project_color: string
+        favorite: boolean
+        wants_comment_notification_emails: boolean
+        will_receive_mention_notifications_or_emails: boolean
+        person: {
+          kind: string
+          id: number
+          name: string
+          email: string
+          initials: string
+          username: string
+        }
+      }>
+    >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
+      let people: Array<tracker.Person> = page.map((membership) => membership.person)
+      await db.insert(tracker.personTable).values(people)
+    })
+
+    type ApiStory = {
+      kind: string
+      id: number
+      created_at: string
+      updated_at: string
+      accepted_at: string
+      estimate?: number
+      story_type: string
+      story_priority: string
+      name: string
+      description?: string
+      current_state: string
+      requested_by_id: number
+      url: string
+      project_id: number
+      owner_ids: number[]
+      labels: ApiLabel[]
+      owned_by_id?: number
+    }
+
+    type ApiLabel = {
+      id: number
+      project_id: number
+      kind: string
+      name: string
+      created_at: string
+      updated_at: string
+    }
+
+    await api.paginate<Array<ApiStory>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories`,
       async (page) => {
         let result = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${result.changes} stories`)
+        console.log(JSON.stringify(page))
 
         for (const story of page) {
+          // labels
+          if (story.labels.length > 0) {
+            await db.insert(tracker.storyLabelTable).values(
+              story.labels.map((label) => ({
+                label_id: label.id,
+                story_id: story.id,
+              })),
+            )
+          }
+
+          // comments
           type ApiComment = {
             id: number
             story_id: number
@@ -100,11 +176,9 @@ export default class Dump extends Command {
             thumbnail_url: string
           }
 
-
           await api.page<Array<ApiComment>>(
             `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments?fields=id,story_id,text,person_id,created_at,updated_at,file_attachments`,
             async (page) => {
-
               console.log(`adding ${page.length} comments to story ${story.id}...`)
               await db.insert(tracker.commentTable).values(page)
 
@@ -129,34 +203,6 @@ export default class Dump extends Command {
         }
       },
     )
-
-    await api.page<
-      Array<{
-        kind: string
-        project_id: number
-        id: number
-        last_viewed_at: Date
-        created_at: Date
-        updated_at: Date
-        role: string
-        project_color: string
-        favorite: boolean
-        wants_comment_notification_emails: boolean
-        will_receive_mention_notifications_or_emails: boolean
-        person: {
-          kind: string
-          id: number
-          name: string
-          email: string
-          initials: string
-          username: string
-        }
-      }>
-    >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
-      console.log(JSON.stringify(page))
-      let people: Array<tracker.Person> = page.map((membership) => membership.person)
-      await db.insert(tracker.personTable).values(people)
-    })
 
     // returns counts of tables
     console.log('epics: ' + (await db.select({count: count()}).from(tracker.epicTable))[0].count)
