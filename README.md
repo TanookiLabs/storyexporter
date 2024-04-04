@@ -44,7 +44,7 @@ _See code: [src/commands/configure.ts](https://github.com/tanookilabs/storyexpor
 
 ## `storyexporter dump`
 
-describe the command here
+exports pivotal tracker data to sqlite database
 
 ```
 USAGE
@@ -55,7 +55,7 @@ FLAGS
   -p, --project=<value>   (required) project id to dump
 
 DESCRIPTION
-  describe the command here
+  exports pivotal tracker data to sqlite database
 
 EXAMPLES
   $ storyexporter dump
