@@ -3,7 +3,7 @@ CREATE TABLE `comment` (
 	`story_id` integer NOT NULL,
 	`text` text,
 	`person_id` integer NOT NULL,
-	`created_at` text,
+	`created_at` text NOT NULL,
 	`updated_at` text,
 	FOREIGN KEY (`story_id`) REFERENCES `story`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`person_id`) REFERENCES `person`(`id`) ON UPDATE no action ON DELETE no action
@@ -23,7 +23,8 @@ CREATE TABLE `epic` (
 --> statement-breakpoint
 CREATE TABLE `file_attachment_file` (
 	`file_attachment_id` integer NOT NULL,
-	`blob` blob NOT NULL
+	`blob` blob NOT NULL,
+	FOREIGN KEY (`file_attachment_id`) REFERENCES `file_attachment`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `file_attachment` (
@@ -41,7 +42,7 @@ CREATE TABLE `file_attachment` (
 CREATE TABLE `label` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`project_id` integer NOT NULL,
-	`name` text,
+	`name` text NOT NULL,
 	`description` text,
 	`created_at` text,
 	`updated_at` text,

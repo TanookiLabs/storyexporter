@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "c55ca431-496e-4e38-bbde-b6441f490168",
+  "id": "4c8d4b10-301b-4646-8baa-ea41f94b6ed9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comment": {
@@ -39,7 +39,7 @@
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "updated_at": {
@@ -194,7 +194,21 @@
           "isUnique": true
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "file_attachment_file_file_attachment_id_file_attachment_id_fk": {
+          "name": "file_attachment_file_file_attachment_id_file_attachment_id_fk",
+          "tableFrom": "file_attachment_file",
+          "tableTo": "file_attachment",
+          "columnsFrom": [
+            "file_attachment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -298,7 +312,7 @@
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "description": {
