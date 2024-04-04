@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "a91c1a86-6a94-48ae-96a3-44c7343abbf4",
+  "id": "c55ca431-496e-4e38-bbde-b6441f490168",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comment": {
@@ -560,6 +560,20 @@
           "notNull": true,
           "autoincrement": false
         },
+        "owned_by_id": {
+          "name": "owned_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "requested_by_id": {
+          "name": "requested_by_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "updated_at": {
           "name": "updated_at",
           "type": "text",
@@ -576,6 +590,32 @@
           "tableTo": "project",
           "columnsFrom": [
             "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "story_owned_by_id_person_id_fk": {
+          "name": "story_owned_by_id_person_id_fk",
+          "tableFrom": "story",
+          "tableTo": "person",
+          "columnsFrom": [
+            "owned_by_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "story_requested_by_id_person_id_fk": {
+          "name": "story_requested_by_id_person_id_fk",
+          "tableFrom": "story",
+          "tableTo": "person",
+          "columnsFrom": [
+            "requested_by_id"
           ],
           "columnsTo": [
             "id"

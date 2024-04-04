@@ -83,8 +83,12 @@ CREATE TABLE `story` (
 	`estimate` real,
 	`accepted_at` text,
 	`created_at` text NOT NULL,
+	`owned_by_id` integer,
+	`requested_by_id` integer NOT NULL,
 	`updated_at` text,
-	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`owned_by_id`) REFERENCES `person`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`requested_by_id`) REFERENCES `person`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `file_attachment_id_idx` ON `file_attachment_file` (`file_attachment_id`);

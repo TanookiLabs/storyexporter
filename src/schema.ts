@@ -22,6 +22,8 @@ export const storyTable = sqliteTable('story', {
   estimate: real('estimate'),
   accepted_at: text('accepted_at'),
   created_at: text('created_at').notNull(),
+  owned_by_id: integer('owned_by_id').references(() => personTable.id),
+  requested_by_id: integer('requested_by_id').notNull().references(() => personTable.id),
   updatedAt: text('updated_at'),
 })
 
