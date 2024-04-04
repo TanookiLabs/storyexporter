@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "81cc7912-0a8d-4433-804f-0813becb05d3",
+  "id": "b0de41bd-effc-46a4-9d92-2be112ff40bc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comment": {
@@ -106,6 +106,37 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "file_attachment_file": {
+      "name": "file_attachment_file",
+      "columns": {
+        "file_attachment_id": {
+          "name": "file_attachment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "blob": {
+          "name": "blob",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "file_attachment_id_idx": {
+          "name": "file_attachment_id_idx",
+          "columns": [
+            "file_attachment_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "file_attachment": {
       "name": "file_attachment",
       "columns": {
@@ -113,13 +144,6 @@
           "name": "id",
           "type": "integer",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "story_id": {
-          "name": "story_id",
-          "type": "integer",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
@@ -161,6 +185,13 @@
         "created_at": {
           "name": "created_at",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

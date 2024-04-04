@@ -1,26 +1,27 @@
 import {InferInsertModel} from 'drizzle-orm'
-import {integer, real, sqliteTable, text} from 'drizzle-orm/sqlite-core'
+import {blob, integer, real, sqliteTable, text, uniqueIndex} from 'drizzle-orm/sqlite-core'
+
 
 export const projectTable = sqliteTable('project', {
   id: integer('id').primaryKey().notNull(),
   name: text('name').notNull(),
   description: text('description'),
   status: text('status'),
-  iterationLength: integer('iteration_length'),
+  iteration_length: integer('iteration_length'),
   created_at: text('created_at'),
   updated_at: text('updated_at'),
 })
 
 export const storyTable = sqliteTable('story', {
   id: integer('id').primaryKey().notNull(),
-  projectId: integer('project_id'),
+  project_id: integer('project_id'),
   name: text('name'),
   description: text('description'),
-  storyType: text('story_type'),
-  currentState: text('current_state'),
+  story_type: text('story_type'),
+  current_state: text('current_state'),
   estimate: real('estimate'),
-  acceptedAt: text('accepted_at'),
-  createdAt: text('created_at'),
+  accepted_at: text('accepted_at'),
+  created_at: text('created_at'),
   updatedAt: text('updated_at'),
 })
 
@@ -34,33 +35,46 @@ export const personTable = sqliteTable('person', {
 
 export const commentTable = sqliteTable('comment', {
   id: integer('id').primaryKey().notNull(),
-  storyId: integer('story_id'),
+  story_id: integer('story_id'),
   text: text('text'),
-  personId: integer('person_id'),
-  createdAt: text('created_at'),
+  person_id: integer('person_id'),
+  created_at: text('created_at'),
   updatedAt: text('updated_at'),
 })
 
 export const epicTable = sqliteTable('epic', {
   id: integer('id').primaryKey().notNull(),
-  projectId: integer('project_id'),
+  project_id: integer('project_id'),
   name: text('name'),
   description: text('description'),
-  createdAt: text('created_at'),
+  created_at: text('created_at'),
   updatedAt: text('updated_at'),
 })
 
 export const fileAttachmentTable = sqliteTable('file_attachment', {
   id: integer('id').primaryKey().notNull(),
-  storyId: integer('story_id').notNull(),
   filename: text('filename'),
-  contentType: text('content_type'),
+  content_type: text('content_type'),
   size: integer('size'),
-  downloadUrl: text('download_url'),
-  uploaderId: integer('uploader_id'),
-  createdAt: text('created_at'),
+  download_url: text('download_url'),
+  uploader_id: integer('uploader_id'),
+  created_at: text('created_at'),
+  comment_id: integer('comment_id'), // this doesn't come back from the API
 })
 
+export const fileAttachmentFileTable = sqliteTable(
+  'file_attachment_file',
+  {
+    file_attachment_id: integer('file_attachment_id').notNull(),
+    blob: blob('blob', {mode: "buffer"}).notNull(),
+  },
+  (table) => {
+    // file_attachment_id must be unique
+    return {
+      file_attachment_id: uniqueIndex('file_attachment_id_idx').on(table.file_attachment_id),
+    }
+  },
+)
 
 export type Project = InferInsertModel<typeof projectTable>
 export type Story = InferInsertModel<typeof storyTable>

@@ -21,6 +21,7 @@ export default class Dump extends Command {
   public async run(): Promise<void> {
     const {flags} = await this.parse(Dump)
     const projectId = flags.project
+    const debuggingCommentLimit = 50
 
     let config
     try {
@@ -28,15 +29,12 @@ export default class Dump extends Command {
       config = configSchema.parse(JSON.parse(configFile.toString()))
     } catch (er) {
       console.error('error reading config file', er)
-      console.log('run configure')
+      console.error('to fix this: run `storyexporter configure --apiKey <your api key>`')
       return
     }
 
-    let currentDirectory = process.cwd()
-
     let dbPath = flags.database
 
-    // if the db exists already, don't open it, use fs promise api
     if (
       await fs
         .access(dbPath)
@@ -74,14 +72,61 @@ export default class Dump extends Command {
         let result = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${result.changes} stories`)
 
-        // for (const story of page) {
-        //   api.page<Array<tracker.Comment>>(
-        //     `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments`,
-        //     async (page) => {
-        //       await db.insert(tracker.commentTable).values(page)
-        //     },
-        //   )
-        // }
+        for (const story of page) {
+          type ApiComment = {
+            id: number
+            story_id: number
+            text: string
+            person_id: number
+            created_at: string
+            updated_at: string
+            file_attachments: ApiFileAttachment[]
+          }
+
+          type ApiFileAttachment = {
+            kind: string
+            id: number
+            filename: string
+            created_at: string
+            uploader_id: number
+            thumbnailable: boolean
+            height: number
+            width: number
+            size: number
+            download_url: string
+            content_type: string
+            uploaded: boolean
+            big_url: string
+            thumbnail_url: string
+          }
+
+
+          await api.page<Array<ApiComment>>(
+            `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments?fields=id,story_id,text,person_id,created_at,updated_at,file_attachments`,
+            async (page) => {
+
+              console.log(`adding ${page.length} comments to story ${story.id}...`)
+              await db.insert(tracker.commentTable).values(page)
+
+              for (const comment of page) {
+                for (const fileAttachment of comment.file_attachments) {
+                  await db.insert(tracker.fileAttachmentTable).values({
+                    ...fileAttachment,
+                    comment_id: comment.id,
+                  })
+
+                  let downloadUrl = `https://www.pivotaltracker.com/file_attachments/${fileAttachment.id}/download`
+                  const response = await api.rawRequest(downloadUrl)
+                  const arrayBuffer = await response.arrayBuffer()
+                  await db.insert(tracker.fileAttachmentFileTable).values({
+                    file_attachment_id: fileAttachment.id,
+                    blob: Buffer.from(arrayBuffer),
+                  })
+                }
+              }
+            },
+          )
+        }
       },
     )
 
@@ -109,7 +154,7 @@ export default class Dump extends Command {
       }>
     >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
       console.log(JSON.stringify(page))
-      let people = page.map((membership) => membership.person)
+      let people: Array<tracker.Person> = page.map((membership) => membership.person)
       await db.insert(tracker.personTable).values(people)
     })
 
@@ -118,5 +163,6 @@ export default class Dump extends Command {
     console.log('stories: ' + (await db.select({count: count()}).from(tracker.storyTable))[0].count)
     console.log('comments: ' + (await db.select({count: count()}).from(tracker.commentTable))[0].count)
     console.log('people: ' + (await db.select({count: count()}).from(tracker.personTable))[0].count)
+    console.log('attachments: ' + (await db.select({count: count()}).from(tracker.fileAttachmentFileTable))[0].count)
   }
 }

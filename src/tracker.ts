@@ -9,6 +9,29 @@ const limit = pRateLimit({
 })
 
 export function trackerApi(config: {apiKey: string}) {
+  // same as request but doesn't expect json
+  async function rawRequest(url: string) {
+    const response = await limit(() =>
+      fetch(url, {
+        headers: {
+          'X-TrackerToken': config.apiKey,
+        },
+      }),
+    )
+
+    if (!response.ok) {
+      try {
+        console.error('url:', url)
+        console.error('status:', response.status)
+        console.error(await response.text())
+        console.error('headers:')
+        console.error(Object.fromEntries(response.headers.entries()))
+      } catch (er) {}
+      throw new Error(`request failed with status ${response.status}`)
+    }
+    return response
+  }
+
   async function request<TData>(url: string): Promise<TData> {
     const response = await limit(() =>
       fetch(url, {
@@ -22,7 +45,7 @@ export function trackerApi(config: {apiKey: string}) {
     if (!response.ok) {
       try {
         console.error(await response.text())
-        console.error("headers:")
+        console.error('headers:')
         console.error(Object.fromEntries(response.headers.entries()))
       } catch (er) {}
       throw new Error(`request failed with status ${response.status}`)
@@ -80,6 +103,7 @@ export function trackerApi(config: {apiKey: string}) {
 
   return {
     request: request,
+    rawRequest: rawRequest,
     paginate: paginate,
     page: page,
   }
