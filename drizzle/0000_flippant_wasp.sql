@@ -16,15 +16,20 @@ CREATE TABLE `epic` (
 	`updated_at` text
 );
 --> statement-breakpoint
+CREATE TABLE `file_attachment_file` (
+	`file_attachment_id` integer NOT NULL,
+	`blob` blob NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `file_attachment` (
 	`id` integer PRIMARY KEY NOT NULL,
-	`story_id` integer NOT NULL,
 	`filename` text,
 	`content_type` text,
 	`size` integer,
 	`download_url` text,
 	`uploader_id` integer,
-	`created_at` text
+	`created_at` text,
+	`comment_id` integer
 );
 --> statement-breakpoint
 CREATE TABLE `person` (
@@ -57,3 +62,5 @@ CREATE TABLE `story` (
 	`created_at` text,
 	`updated_at` text
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX `file_attachment_id_idx` ON `file_attachment_file` (`file_attachment_id`);
