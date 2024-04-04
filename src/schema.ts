@@ -15,13 +15,13 @@ export const projectTable = sqliteTable('project', {
 export const storyTable = sqliteTable('story', {
   id: integer('id').primaryKey().notNull(),
   project_id: integer('project_id').notNull().references(() => projectTable.id),
-  name: text('name'),
+  name: text('name').notNull(),
   description: text('description'),
-  story_type: text('story_type'),
-  current_state: text('current_state'),
+  story_type: text('story_type').notNull(),
+  current_state: text('current_state').notNull(),
   estimate: real('estimate'),
   accepted_at: text('accepted_at'),
-  created_at: text('created_at'),
+  created_at: text('created_at').notNull(),
   updatedAt: text('updated_at'),
 })
 
@@ -59,7 +59,7 @@ export const labelTable = sqliteTable('label', {
 export const epicTable = sqliteTable('epic', {
   id: integer('id').primaryKey().notNull(),
   project_id: integer('project_id').notNull().references(() => projectTable.id),
-  label_id: integer('label_id'),
+  label_id: integer('label_id').references(() => labelTable.id),
   name: text('name'),
   description: text('description'),
   created_at: text('created_at'),
@@ -74,7 +74,7 @@ export const fileAttachmentTable = sqliteTable('file_attachment', {
   download_url: text('download_url'),
   uploader_id: integer('uploader_id'),
   created_at: text('created_at'),
-  comment_id: integer('comment_id'), // this doesn't come back from the API
+  comment_id: integer('comment_id').references(() => commentTable.id), // this doesn't come back from the API
 })
 
 export const fileAttachmentFileTable = sqliteTable(
@@ -84,7 +84,6 @@ export const fileAttachmentFileTable = sqliteTable(
     blob: blob('blob', {mode: "buffer"}).notNull(),
   },
   (table) => {
-    // file_attachment_id must be unique
     return {
       file_attachment_id: uniqueIndex('file_attachment_id_idx').on(table.file_attachment_id),
     }

@@ -17,7 +17,8 @@ CREATE TABLE `epic` (
 	`description` text,
 	`created_at` text,
 	`updated_at` text,
-	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`label_id`) REFERENCES `label`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `file_attachment_file` (
@@ -33,7 +34,8 @@ CREATE TABLE `file_attachment` (
 	`download_url` text,
 	`uploader_id` integer,
 	`created_at` text,
-	`comment_id` integer
+	`comment_id` integer,
+	FOREIGN KEY (`comment_id`) REFERENCES `comment`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `label` (
@@ -74,13 +76,13 @@ CREATE TABLE `story_label` (
 CREATE TABLE `story` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`project_id` integer NOT NULL,
-	`name` text,
+	`name` text NOT NULL,
 	`description` text,
-	`story_type` text,
-	`current_state` text,
+	`story_type` text NOT NULL,
+	`current_state` text NOT NULL,
 	`estimate` real,
 	`accepted_at` text,
-	`created_at` text,
+	`created_at` text NOT NULL,
 	`updated_at` text,
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
 );
