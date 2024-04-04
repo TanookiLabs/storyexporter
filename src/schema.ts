@@ -14,7 +14,7 @@ export const projectTable = sqliteTable('project', {
 
 export const storyTable = sqliteTable('story', {
   id: integer('id').primaryKey().notNull(),
-  project_id: integer('project_id'),
+  project_id: integer('project_id').notNull().references(() => projectTable.id),
   name: text('name'),
   description: text('description'),
   story_type: text('story_type'),
@@ -23,6 +23,11 @@ export const storyTable = sqliteTable('story', {
   accepted_at: text('accepted_at'),
   created_at: text('created_at'),
   updatedAt: text('updated_at'),
+})
+
+export const storyLabelTable = sqliteTable('story_label', {
+  story_id: integer('story_id').notNull().references(() => storyTable.id),
+  label_id: integer('label_id').notNull().references(() => labelTable.id),
 })
 
 export const personTable = sqliteTable('person', {
@@ -35,16 +40,26 @@ export const personTable = sqliteTable('person', {
 
 export const commentTable = sqliteTable('comment', {
   id: integer('id').primaryKey().notNull(),
-  story_id: integer('story_id'),
+  story_id: integer('story_id').notNull().references(() => storyTable.id),
   text: text('text'),
-  person_id: integer('person_id'),
+  person_id: integer('person_id').notNull().references(() => personTable.id),
+  created_at: text('created_at'),
+  updatedAt: text('updated_at'),
+})
+
+export const labelTable = sqliteTable('label', {
+  id: integer('id').primaryKey().notNull(),
+  project_id: integer('project_id').notNull().references(() => projectTable.id),
+  name: text('name'),
+  description: text('description'),
   created_at: text('created_at'),
   updatedAt: text('updated_at'),
 })
 
 export const epicTable = sqliteTable('epic', {
   id: integer('id').primaryKey().notNull(),
-  project_id: integer('project_id'),
+  project_id: integer('project_id').notNull().references(() => projectTable.id),
+  label_id: integer('label_id'),
   name: text('name'),
   description: text('description'),
   created_at: text('created_at'),
@@ -82,3 +97,4 @@ export type Person = InferInsertModel<typeof personTable>
 export type Comment = InferInsertModel<typeof commentTable>
 export type FileAttachment = InferInsertModel<typeof fileAttachmentTable>
 export type Epic = InferInsertModel<typeof epicTable>
+export type Label = InferInsertModel<typeof labelTable>

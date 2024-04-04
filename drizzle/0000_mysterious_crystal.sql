@@ -1,19 +1,23 @@
 CREATE TABLE `comment` (
 	`id` integer PRIMARY KEY NOT NULL,
-	`story_id` integer,
+	`story_id` integer NOT NULL,
 	`text` text,
-	`person_id` integer,
+	`person_id` integer NOT NULL,
 	`created_at` text,
-	`updated_at` text
+	`updated_at` text,
+	FOREIGN KEY (`story_id`) REFERENCES `story`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`person_id`) REFERENCES `person`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `epic` (
 	`id` integer PRIMARY KEY NOT NULL,
-	`project_id` integer,
+	`project_id` integer NOT NULL,
+	`label_id` integer,
 	`name` text,
 	`description` text,
 	`created_at` text,
-	`updated_at` text
+	`updated_at` text,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `file_attachment_file` (
@@ -30,6 +34,16 @@ CREATE TABLE `file_attachment` (
 	`uploader_id` integer,
 	`created_at` text,
 	`comment_id` integer
+);
+--> statement-breakpoint
+CREATE TABLE `label` (
+	`id` integer PRIMARY KEY NOT NULL,
+	`project_id` integer NOT NULL,
+	`name` text,
+	`description` text,
+	`created_at` text,
+	`updated_at` text,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE TABLE `person` (
@@ -50,9 +64,16 @@ CREATE TABLE `project` (
 	`updated_at` text
 );
 --> statement-breakpoint
+CREATE TABLE `story_label` (
+	`story_id` integer NOT NULL,
+	`label_id` integer NOT NULL,
+	FOREIGN KEY (`story_id`) REFERENCES `story`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`label_id`) REFERENCES `label`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `story` (
 	`id` integer PRIMARY KEY NOT NULL,
-	`project_id` integer,
+	`project_id` integer NOT NULL,
 	`name` text,
 	`description` text,
 	`story_type` text,
@@ -60,7 +81,8 @@ CREATE TABLE `story` (
 	`estimate` real,
 	`accepted_at` text,
 	`created_at` text,
-	`updated_at` text
+	`updated_at` text,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `file_attachment_id_idx` ON `file_attachment_file` (`file_attachment_id`);
