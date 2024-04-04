@@ -64,7 +64,7 @@ export default class Dump extends Command {
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/labels`,
       (page) => {
         return db.insert(tracker.labelTable).values(page)
-      }
+      },
     )
 
     await api.page<Array<tracker.Epic>>(
@@ -101,7 +101,36 @@ export default class Dump extends Command {
       await db.insert(tracker.personTable).values(people)
     })
 
-    await api.paginate<Array<tracker.Story>>(
+    type ApiStory = {
+      kind: string
+      id: number
+      created_at: string
+      updated_at: string
+      accepted_at: string
+      estimate?: number
+      story_type: string
+      story_priority: string
+      name: string
+      description?: string
+      current_state: string
+      requested_by_id: number
+      url: string
+      project_id: number
+      owner_ids: number[]
+      labels: ApiLabel[]
+      owned_by_id?: number
+    }
+
+    type ApiLabel = {
+      id: number
+      project_id: number
+      kind: string
+      name: string
+      created_at: string
+      updated_at: string
+    }
+
+    await api.paginate<Array<ApiStory>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories`,
       async (page) => {
         let result = await db.insert(tracker.storyTable).values(page)
@@ -109,6 +138,17 @@ export default class Dump extends Command {
         console.log(JSON.stringify(page))
 
         for (const story of page) {
+          // labels
+          if (story.labels.length > 0) {
+            await db.insert(tracker.storyLabelTable).values(
+              story.labels.map((label) => ({
+                label_id: label.id,
+                story_id: story.id,
+              })),
+            )
+          }
+
+          // comments
           type ApiComment = {
             id: number
             story_id: number
@@ -136,11 +176,9 @@ export default class Dump extends Command {
             thumbnail_url: string
           }
 
-
           await api.page<Array<ApiComment>>(
             `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments?fields=id,story_id,text,person_id,created_at,updated_at,file_attachments`,
             async (page) => {
-
               console.log(`adding ${page.length} comments to story ${story.id}...`)
               await db.insert(tracker.commentTable).values(page)
 
