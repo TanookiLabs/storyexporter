@@ -57,7 +57,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10",
     "@types/node": "^18",
-    "chai": "^4",
+    "chai": "^5",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8",
     "eslint-config-oclif": "^5",
