@@ -7,6 +7,8 @@ import {configPath, configSchema} from '../configuration.js'
 import * as tracker from '../schema.js'
 import {trackerApi} from '../tracker.js'
 import {count} from 'drizzle-orm'
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 export default class Dump extends Command {
   static description = 'exports pivotal tracker data to sqlite database'
@@ -22,14 +24,17 @@ export default class Dump extends Command {
     const {flags} = await this.parse(Dump)
     const projectId = flags.project
 
-    let config
-    try {
-      const configFile = await fs.readFile(configPath(this))
-      config = configSchema.parse(JSON.parse(configFile.toString()))
-    } catch (er) {
-      console.error('error reading config file', er)
-      console.error('to fix this: run `storyexporter configure --apiKey <your api key>`')
-      return
+    let apiKey = process.env.PIVOTAL_TRACKER_API_KEY
+
+    if (!apiKey) {
+      try {
+        const configFile = await fs.readFile(configPath(this))
+        apiKey = configSchema.parse(JSON.parse(configFile.toString())).apiKey
+      } catch (er) {
+        console.error('error reading config file', er)
+        console.error('to fix this: run `storyexporter configure --apiKey <your api key>`')
+        return
+      }
     }
 
     let dbPath = flags.database
@@ -47,11 +52,13 @@ export default class Dump extends Command {
     const sqlite = new Database(dbPath, {})
     const db = drizzle(sqlite)
 
+
     // TODO: do this without migration files if possible, not sure if drizzle supports that
     // need to make sure this works when run from a different directory
-    migrate(db, {migrationsFolder: 'drizzle'})
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    migrate(db, {migrationsFolder: `${__dirname}/../../drizzle`})
 
-    const api = trackerApi(config)
+    const api = trackerApi({apiKey})
 
     await api.page<Array<tracker.Project>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}`,
@@ -145,7 +152,6 @@ export default class Dump extends Command {
       async (page) => {
         let result = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${result.changes} stories`)
-        console.log(JSON.stringify(page))
 
         for (const story of page) {
           // labels

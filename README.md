@@ -4,6 +4,12 @@ storyexporter
 quick n’ dirty CLI tool to copy your pivotal tracker data to an sqlite database. unlike the csv export built into pivotal tracker, this tool brings in comments and file attachments.
 
 
+```
+# visit https://www.pivotaltracker.com/profile and 'create new token'
+PIVOTAL_TRACKER_API_KEY="<your-api-key>" npx storyexporter dump --project 2648115 -o my-project.db
+```
+
+
 # Usage
 
 <!-- usage -->
