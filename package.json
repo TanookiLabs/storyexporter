@@ -1,6 +1,6 @@
 {
   "name": "@tanooki/storyexporter",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "description": "exports pivotal tracker data to an sqlite database",
   "keywords": [
     "oclif"
