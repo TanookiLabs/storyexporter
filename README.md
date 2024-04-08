@@ -9,6 +9,8 @@ quick n’ dirty CLI tool to copy your pivotal tracker data to an sqlite databas
 PIVOTAL_TRACKER_API_KEY="<your-api-key>" npx @tanooki/storyexporter dump --project <your-project-id> -o my-project.db
 ```
 
+for anyone moving over to Linear, you might find [this fork](https://github.com/schpet/linear/tree/tracker-sqlite) of their CLI importer useful.  [see the pull request](https://github.com/linear/linear/pull/515) to see how that works.
+
 
 # Usage
 
