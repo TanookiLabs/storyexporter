@@ -6,7 +6,7 @@ quick n’ dirty CLI tool to copy your pivotal tracker data to an sqlite databas
 
 ```
 # visit https://www.pivotaltracker.com/profile and 'create new token'
-PIVOTAL_TRACKER_API_KEY="<your-api-key>" npx storyexporter dump --project 2648115 -o my-project.db
+PIVOTAL_TRACKER_API_KEY="<your-api-key>" npx @tanooki/storyexporter dump --project <your-project-id> -o my-project.db
 ```
 
 
