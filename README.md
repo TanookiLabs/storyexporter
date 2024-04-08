@@ -14,11 +14,11 @@ PIVOTAL_TRACKER_API_KEY="<your-api-key>" npx storyexporter dump --project 264811
 
 <!-- usage -->
 ```sh-session
-$ npm install -g storyexporter
+$ npm install -g @tanooki/storyexporter
 $ storyexporter COMMAND
 running command...
 $ storyexporter (--version)
-storyexporter/0.4.27 darwin-arm64 node-v20.5.0
+@tanooki/storyexporter/0.4.27 darwin-arm64 node-v20.5.0
 $ storyexporter --help [COMMAND]
 USAGE
   $ storyexporter COMMAND
