@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && npm run copy-files",
-    "copy-files": "copyfiles -u 1 src/drizzle/**/* dist/",
+    "copy-files": "copyfiles -u 1 src/drizzle/* src/drizzle/**/* dist/",
     "lint": "eslint . --ext .ts",
     "prepack": "npm run build && oclif manifest && oclif readme",
     "postpack": "shx rm -f oclif.manifest.json",
