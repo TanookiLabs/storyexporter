@@ -1,6 +1,9 @@
 storyexporter
 =================
 
+quick n’ dirty CLI tool to copy your pivotal tracker data to an sqlite database. unlike the csv export built into pivotal tracker, this tool brings in comments and file attachments.
+
+
 # Usage
 
 <!-- usage -->
