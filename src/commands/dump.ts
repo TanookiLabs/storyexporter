@@ -56,7 +56,7 @@ export default class Dump extends Command {
     // TODO: do this without migration files if possible, not sure if drizzle supports that
     // need to make sure this works when run from a different directory
     const __dirname = dirname(fileURLToPath(import.meta.url));
-    migrate(db, {migrationsFolder: `${__dirname}/../../drizzle`})
+    migrate(db, {migrationsFolder: `${__dirname}/../drizzle`})
 
     const api = trackerApi({apiKey})
 
