@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "4c8d4b10-301b-4646-8baa-ea41f94b6ed9",
+  "id": "1a5e04df-84c8-48a2-8e44-416557a5e9df",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "comment": {
@@ -103,7 +103,7 @@
           "name": "label_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "name": {

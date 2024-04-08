@@ -12,7 +12,7 @@ CREATE TABLE `comment` (
 CREATE TABLE `epic` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`project_id` integer NOT NULL,
-	`label_id` integer,
+	`label_id` integer NOT NULL,
 	`name` text,
 	`description` text,
 	`created_at` text,

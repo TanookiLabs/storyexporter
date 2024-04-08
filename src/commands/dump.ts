@@ -67,12 +67,22 @@ export default class Dump extends Command {
       },
     )
 
-    await api.page<Array<tracker.Epic>>(
-      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`,
-      (page) => {
-        return db.insert(tracker.epicTable).values(page)
-      },
-    )
+    await api.page<
+      Array<{
+        id: number
+        kind: string
+        created_at: string
+        updated_at: string
+        project_id: number
+        name: string
+        url?: string
+        label: {
+          id: number
+        }
+      }>
+    >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/epics`, (page) => {
+      return db.insert(tracker.epicTable).values(page.map((epic) => ({...epic, label_id: epic.label?.id})))
+    })
 
     await api.page<
       Array<{

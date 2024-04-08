@@ -61,7 +61,7 @@ export const labelTable = sqliteTable('label', {
 export const epicTable = sqliteTable('epic', {
   id: integer('id').primaryKey().notNull(),
   project_id: integer('project_id').notNull().references(() => projectTable.id),
-  label_id: integer('label_id').references(() => labelTable.id),
+  label_id: integer('label_id').notNull().references(() => labelTable.id),
   name: text('name'),
   description: text('description'),
   created_at: text('created_at'),
