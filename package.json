@@ -1,5 +1,5 @@
 {
-  "name": "storyexporter",
+  "name": "@tanookilabs/storyexporter",
   "version": "0.4.27",
   "description": "exports pivotal tracker data to an sqlite database",
   "keywords": [
