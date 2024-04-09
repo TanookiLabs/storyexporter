@@ -92,6 +92,16 @@ export const fileAttachmentFileTable = sqliteTable(
   },
 )
 
+export const blockerTable = sqliteTable('blocker', {
+  id: integer('id').primaryKey().notNull(),
+  description: text('description').notNull(),
+  resolved: integer('resolved', {mode: "boolean"}).notNull(),
+  story_id: integer('story_id').notNull().references(() => storyTable.id),
+  person_id: integer('person_id').notNull().references(() => personTable.id),
+  created_at: text('created_at').notNull(),
+  updated_at: text('updated_at').notNull(),
+})
+
 export type Project = InferInsertModel<typeof projectTable>
 export type Story = InferInsertModel<typeof storyTable>
 export type Person = InferInsertModel<typeof personTable>

@@ -7,8 +7,8 @@ import {configPath, configSchema} from '../configuration.js'
 import * as tracker from '../schema.js'
 import {trackerApi} from '../tracker.js'
 import {count} from 'drizzle-orm'
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {dirname} from 'path'
+import {fileURLToPath} from 'url'
 
 export default class Dump extends Command {
   static description = 'exports pivotal tracker data to sqlite database'
@@ -52,10 +52,9 @@ export default class Dump extends Command {
     const sqlite = new Database(dbPath, {})
     const db = drizzle(sqlite)
 
-
     // TODO: do this without migration files if possible, not sure if drizzle supports that
     // need to make sure this works when run from a different directory
-    const __dirname = dirname(fileURLToPath(import.meta.url));
+    const __dirname = dirname(fileURLToPath(import.meta.url))
     migrate(db, {migrationsFolder: `${__dirname}/../drizzle`})
 
     const api = trackerApi({apiKey})
@@ -135,7 +134,19 @@ export default class Dump extends Command {
       project_id: number
       owner_ids: number[]
       labels: ApiLabel[]
+      blockers: ApiBlocker[]
       owned_by_id?: number
+    }
+
+    type ApiBlocker = {
+      id: number
+      kind: string
+      description: string
+      resolved: boolean
+      story_id: number
+      person_id: number
+      created_at: string
+      updated_at: string
     }
 
     type ApiLabel = {
@@ -148,10 +159,17 @@ export default class Dump extends Command {
     }
 
     await api.paginate<Array<ApiStory>>(
-      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories`,
+      `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories?fields=id,created_at,updated_at,accepted_at,estimate,story_type,story_priority,name,description,current_state,requested_by_id,url,project_id,owner_ids,labels,owned_by_id,blockers`,
       async (page) => {
-        let result = await db.insert(tracker.storyTable).values(page)
-        console.log(`added ${result.changes} stories`)
+        console.log(JSON.stringify(page))
+        let storyResult = await db.insert(tracker.storyTable).values(page)
+        console.log(`added ${storyResult.changes} stories`)
+
+        await db.insert(tracker.blockerTable).values(
+          page.flatMap((story) => {
+            return story.blockers.map((blocker) => ({...blocker, story_id: story.id}))
+          }),
+        )
 
         for (const story of page) {
           // labels
