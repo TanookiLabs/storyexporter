@@ -20,7 +20,7 @@ $ npm install -g @tanooki/storyexporter
 $ storyexporter COMMAND
 running command...
 $ storyexporter (--version)
-@tanooki/storyexporter/0.4.32 darwin-arm64 node-v20.5.0
+@tanooki/storyexporter/0.4.33 darwin-arm64 node-v20.5.0
 $ storyexporter --help [COMMAND]
 USAGE
   $ storyexporter COMMAND
@@ -51,7 +51,7 @@ EXAMPLES
   $ storyexporter configure
 ```
 
-_See code: [src/commands/configure.ts](https://github.com/tanookilabs/storyexporter/blob/v0.4.32/src/commands/configure.ts)_
+_See code: [src/commands/configure.ts](https://github.com/tanookilabs/storyexporter/blob/v0.4.33/src/commands/configure.ts)_
 
 ## `storyexporter dump`
 
@@ -72,7 +72,7 @@ EXAMPLES
   $ storyexporter dump
 ```
 
-_See code: [src/commands/dump.ts](https://github.com/tanookilabs/storyexporter/blob/v0.4.32/src/commands/dump.ts)_
+_See code: [src/commands/dump.ts](https://github.com/tanookilabs/storyexporter/blob/v0.4.33/src/commands/dump.ts)_
 
 ## `storyexporter help [COMMAND]`
 
