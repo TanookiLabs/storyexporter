@@ -6,7 +6,7 @@ import {promises as fs} from 'node:fs'
 import {configPath, configSchema} from '../configuration.js'
 import * as tracker from '../schema.js'
 import {trackerApi} from '../tracker.js'
-import {count} from 'drizzle-orm'
+import {count, inArray} from 'drizzle-orm'
 import {dirname} from 'path'
 import {fileURLToPath} from 'url'
 
@@ -161,7 +161,28 @@ export default class Dump extends Command {
     await api.paginate<Array<ApiStory>>(
       `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories?fields=id,created_at,updated_at,accepted_at,estimate,story_type,story_priority,name,description,current_state,requested_by_id,url,project_id,owner_ids,labels,owned_by_id,blockers`,
       async (page) => {
-        console.log(JSON.stringify(page))
+        let peopleIds: Array<number> = Array.from(
+          new Set(
+            page.flatMap(
+              (story) =>
+                [story.requested_by_id, ...story.owner_ids, story.owned_by_id].filter(Boolean) as Array<number>,
+            ),
+          ),
+        )
+        let knownPeople = await db.select().from(tracker.personTable).where(inArray(tracker.personTable.id, peopleIds))
+        let unknownPeople = peopleIds.filter((id) => !knownPeople.some((person) => person.id === id))
+        if (unknownPeople.length > 0) {
+          await db.insert(tracker.personTable).values(
+            unknownPeople.map((id) => ({
+              id,
+              name: 'unknown',
+              email: `unknown-${id}@example.com`,
+              initials: '??',
+              username: `unknown-${id}`,
+            })),
+          )
+        }
+
         let storyResult = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${storyResult.changes} stories`)
 
