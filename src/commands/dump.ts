@@ -169,19 +169,8 @@ export default class Dump extends Command {
             ),
           ),
         )
-        let knownPeople = await db.select().from(tracker.personTable).where(inArray(tracker.personTable.id, peopleIds))
-        let unknownPeople = peopleIds.filter((id) => !knownPeople.some((person) => person.id === id))
-        if (unknownPeople.length > 0) {
-          await db.insert(tracker.personTable).values(
-            unknownPeople.map((id) => ({
-              id,
-              name: 'unknown',
-              email: `unknown-${id}@example.com`,
-              initials: '??',
-              username: `unknown-${id}`,
-            })),
-          )
-        }
+
+        await generateUnknownPeople(peopleIds)
 
         let storyResult = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${storyResult.changes} stories`)
@@ -235,6 +224,9 @@ export default class Dump extends Command {
             `https://www.pivotaltracker.com/services/v5/projects/${projectId}/stories/${story.id}/comments?fields=id,story_id,text,person_id,created_at,updated_at,file_attachments`,
             async (page) => {
               console.log(`adding ${page.length} comments to story ${story.id}...`)
+              let peopleIds: Array<number> = Array.from(new Set(page.map((comment) => comment.person_id)))
+              await generateUnknownPeople(peopleIds)
+
               await db.insert(tracker.commentTable).values(page)
 
               for (const comment of page) {
@@ -265,5 +257,21 @@ export default class Dump extends Command {
     console.log('comments: ' + (await db.select({count: count()}).from(tracker.commentTable))[0].count)
     console.log('people: ' + (await db.select({count: count()}).from(tracker.personTable))[0].count)
     console.log('attachments: ' + (await db.select({count: count()}).from(tracker.fileAttachmentFileTable))[0].count)
+
+    async function generateUnknownPeople(peopleIds: number[]) {
+      let knownPeople = await db.select().from(tracker.personTable).where(inArray(tracker.personTable.id, peopleIds))
+      let unknownPeople = peopleIds.filter((id) => !knownPeople.some((person) => person.id === id))
+      if (unknownPeople.length > 0) {
+        await db.insert(tracker.personTable).values(
+          unknownPeople.map((id) => ({
+            id,
+            name: 'unknown',
+            email: `unknown-${id}@example.com`,
+            initials: '??',
+            username: `unknown-${id}`,
+          }))
+        )
+      }
+    }
   }
 }
