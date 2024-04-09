@@ -1,4 +1,6 @@
 import {pRateLimit} from 'p-ratelimit'
+import fr from "fetch-retry"
+const fetch = fr(global.fetch)
 
 // chatgpt tells me the rate limit is '200 per minute per user'
 // 3 per second comes out at 180 per minute
@@ -13,6 +15,8 @@ export function trackerApi(config: {apiKey: string}) {
   async function rawRequest(url: string) {
     const response = await limit(() =>
       fetch(url, {
+        retries: 5,
+        retryDelay: 1000,
         headers: {
           'X-TrackerToken': config.apiKey,
         },
@@ -35,6 +39,8 @@ export function trackerApi(config: {apiKey: string}) {
   async function request<TData>(url: string): Promise<TData> {
     const response = await limit(() =>
       fetch(url, {
+        retries: 5,
+        retryDelay: 1000,
         headers: {
           'X-TrackerToken': config.apiKey,
           accept: 'application/json',
