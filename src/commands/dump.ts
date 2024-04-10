@@ -114,7 +114,9 @@ export default class Dump extends Command {
       }>
     >(`https://www.pivotaltracker.com/services/v5/projects/${projectId}/memberships`, async (page) => {
       let people: Array<tracker.Person> = page.map((membership) => membership.person)
-      await db.insert(tracker.personTable).values(people)
+      if (people.length > 0) {
+        await db.insert(tracker.personTable).values(people)
+      }
     })
 
     type ApiStory = {
@@ -175,11 +177,13 @@ export default class Dump extends Command {
         let storyResult = await db.insert(tracker.storyTable).values(page)
         console.log(`added ${storyResult.changes} stories`)
 
-        await db.insert(tracker.blockerTable).values(
-          page.flatMap((story) => {
-            return story.blockers.map((blocker) => ({...blocker, story_id: story.id}))
-          }),
-        )
+        const blockers = page.flatMap((story) => {
+          return story.blockers.map((blocker) => ({...blocker, story_id: story.id}))
+        })
+
+        if (blockers.length > 0) {
+          await db.insert(tracker.blockerTable).values(blockers)
+        }
 
         for (const story of page) {
           // labels
@@ -269,7 +273,7 @@ export default class Dump extends Command {
             email: `unknown-${id}@example.com`,
             initials: '??',
             username: `unknown-${id}`,
-          }))
+          })),
         )
       }
     }
