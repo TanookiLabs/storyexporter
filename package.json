@@ -44,7 +44,7 @@
     "@oclif/core": "^3",
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-plugins": "^4",
-    "better-sqlite3": "^9.4.3",
+    "better-sqlite3": "^9.5.0",
     "copyfiles": "^2.4.1",
     "drizzle-orm": "^0.30.6",
     "fetch-retry": "^6.0.0",
