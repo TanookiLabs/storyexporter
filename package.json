@@ -59,7 +59,7 @@
     "@types/chai": "^4",
     "@types/fs-extra": "^11.0.4",
     "@types/mocha": "^10",
-    "@types/node": "^18",
+    "@types/node": "^20",
     "chai": "^4",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8",
