@@ -46,7 +46,7 @@
     "@oclif/plugin-plugins": "^4",
     "better-sqlite3": "^9.4.3",
     "copyfiles": "^2.4.1",
-    "drizzle-orm": "^0.30.6",
+    "drizzle-orm": "^0.31.0",
     "fetch-retry": "^6.0.0",
     "fs-extra": "^11.2.0",
     "p-ratelimit": "^1.0.1",
