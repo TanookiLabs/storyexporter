@@ -43,7 +43,7 @@
   "dependencies": {
     "@oclif/core": "^3",
     "@oclif/plugin-help": "^6",
-    "@oclif/plugin-plugins": "^4",
+    "@oclif/plugin-plugins": "^5",
     "better-sqlite3": "^9.4.3",
     "copyfiles": "^2.4.1",
     "drizzle-orm": "^0.30.6",
