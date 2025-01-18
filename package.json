@@ -61,7 +61,7 @@
     "@types/mocha": "^10",
     "@types/node": "^18",
     "chai": "^4",
-    "drizzle-kit": "^0.20.14",
+    "drizzle-kit": "^0.30.2",
     "eslint": "^8",
     "eslint-config-oclif": "^5",
     "eslint-config-oclif-typescript": "^3",
